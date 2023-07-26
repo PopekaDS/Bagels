@@ -7,11 +7,11 @@
 
 using namespace std;
 
-int NUM_DIGITS = 3;  // (!) Try setting this to 1 or 10.
-int MAX_GUESSES = 10;  // (!) Try setting this to 1 or 100.
+int NUM_DIGITS = 3;
+int MAX_GUESSES = 10;
 
 string getSecretNum() {
-    //Returns a string made up of NUM_DIGITS unique random digits.
+    // Returns a string made up of NUM_DIGITS unique random digits.
     string secretNum = "";
     srand(static_cast<unsigned int>(time(0)));
     for (int i = 0; i < NUM_DIGITS; ++i) {
@@ -57,8 +57,7 @@ string getClues(string guess, string secretNum) {
 
     if (clues.size() == 0) {
         return "Bagels"; // There are no correct digits at all.
-    }
-    else {
+    } else {
         // Sort the clues into alphabetical order so their original order
         // doesn't give information away.
         sort(clues.begin(), clues.end());
@@ -72,11 +71,17 @@ string getClues(string guess, string secretNum) {
     }
 }
 
+string playAgain() {
+    cout << "Do you want to play again? (yes or no)\n";
+    string response = "YES";
+    cin >> ws;
+    getline(cin, response);
+    return response;
+}
 
 int main() {
 
-    cout << "Bagels, a deductive logic game.\n";
-    cout << "By Al Sweigart al@inventwithpython.com\n\n";
+    cout << "Bagels, a deductive logic game.\n\n";
     cout << "I am thinking of a " << NUM_DIGITS << "-digit number with no repeated digits.\n";
     cout << "Try to guess what it is. Here are some clues:\n";
     cout << "When I say:    That means:\n";
@@ -89,8 +94,6 @@ int main() {
         // This stores the secret number the player needs to guess:
         string secretNum = getSecretNum();
         
-
-        secretNum = "701";
         cout << "\n\n\n\nDELETED IT\n"<< "NUM_DIGITS = " << NUM_DIGITS << "\nsecretNum = " << secretNum << "\nDELETED IT\n\n\n\n";
         cout << "I have thought up a number.\n";
         cout << "You have " << MAX_GUESSES << " guesses to get it.\n";
@@ -117,17 +120,20 @@ int main() {
             }
         }
         // Ask player if they want to play again.
-        // !!!!!!!!
-        cout << "Do you want to play again? (yes or no)\n";
-        string response = "Y";
-        getline(cin, response);
-        cout << "response: " << response << endl;
-        transform(response.begin(), response.end(), response.begin(), ::toupper);
-        if (response != "YES" || response != "Y") {
+        string askPlayAgain = "YES";
+        askPlayAgain = playAgain();
+        transform(askPlayAgain.begin(), askPlayAgain.end(), askPlayAgain.begin(), ::toupper);
+
+        if (!(askPlayAgain == "YES" || askPlayAgain == "Y")) {
             break;
         }
+        
     }
     cout << "Thanks for playing!\n";
 
     return 0;
 }
+
+/*
+    Изменить секретное число, чтобы в нем  не было повторяющих чисел
+*/
