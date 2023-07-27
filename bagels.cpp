@@ -1,4 +1,6 @@
-// Original: The Big Book of Small Python Projects: 81 Easy Practice Programs by Al Sweigart
+// Bagels, by Al Sweigart
+// A deductive logic game where you must guess a number based on clues.
+// This code is available at https://nostarch.com/big-book-small-python-programming
 // #1 BAGELS
 #include <iostream>
 #include <string>
