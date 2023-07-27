@@ -1,3 +1,5 @@
+// Original: The Big Book of Small Python Projects: 81 Easy Practice Programs by Al Sweigart
+// #1 BAGELS
 #include <iostream>
 #include <string>
 #include <cstdlib>
@@ -13,12 +15,18 @@ int MAX_GUESSES = 10;
 string getSecretNum() {
     // Returns a string made up of NUM_DIGITS unique random digits.
     string secretNum = "";
-    srand(static_cast<unsigned int>(time(0)));
-    for (int i = 0; i < NUM_DIGITS; ++i) {
+
+    int fNum = -1, sNum = -1, tNum = -1;
+
+    while ((fNum == sNum) || (sNum == tNum) || (fNum == tNum)) {
         int randomNumber = rand();
-        int secretRandomNumber = randomNumber % 10; // [0; 9]
-        secretNum += to_string(secretRandomNumber);
+        fNum = randomNumber % 10;
+        randomNumber = rand();
+        sNum = randomNumber % 10;
+        randomNumber = rand();
+        tNum = randomNumber % 10;
     }
+    secretNum = to_string(fNum) + to_string(sNum) + to_string(tNum);
 
     return secretNum;
 }
@@ -90,14 +98,11 @@ int main() {
     cout << "  Bagels       No digit is correct.\n";
     cout << "For example, if the secret number was 248 and your guess was 843, the\n";
     cout << "clues would be Fermi Pico.\n";
+    srand(static_cast<unsigned int>(time(0)));
     while (true) { // Main game loop.
         // This stores the secret number the player needs to guess:
         string secretNum = getSecretNum();
         
-        cout << "\n\n\n\nDELETED IT\n"<< "NUM_DIGITS = " << NUM_DIGITS << "\nsecretNum = " << secretNum << "\nDELETED IT\n\n\n\n";
-        cout << "I have thought up a number.\n";
-        cout << "You have " << MAX_GUESSES << " guesses to get it.\n";
-
         int numGuesses = 1;
         while (numGuesses <= MAX_GUESSES) {
             string guess = "";
@@ -133,7 +138,3 @@ int main() {
 
     return 0;
 }
-
-/*
-    Изменить секретное число, чтобы в нем  не было повторяющих чисел
-*/
