@@ -6,16 +6,16 @@
 #include <ctime>
 #include <vector>
 #include <algorithm>
+#include "bagels.h"
 
 using namespace std;
 
-int NUM_DIGITS = 3;
-int MAX_GUESSES = 10;
+BagelsGame::BagelsGame(int guesses) {
+    NUM_DIGITS = 3;
+    MAX_GUESSES = guesses;
+}
 
-string getSecretNum() {
-    // Returns a string made up of NUM_DIGITS unique random digits.
-    string secretNum = "";
-
+string BagelsGame::generateSecretNumber() {
     int fNum = -1, sNum = -1, tNum = -1;
 
     while ((fNum == sNum) || (sNum == tNum) || (fNum == tNum)) {
@@ -31,30 +31,34 @@ string getSecretNum() {
     return secretNum;
 }
 
-bool isdecimal(string check) {
+bool BagelsGame::isDecimal(const string& check) const {
+    if (check.size() != NUM_DIGITS) {
+        return false;
+    }
+
     for (char c : check) {
         if (c < '0' || c > '9') {
             return false;
         }
     }
-
     return true;
 }
 
-string getClues(string guess, string secretNum) {
+string BagelsGame::getClues(const string& guess) const {
     // Returns a string with the pico, fermi, bagels clues for a guess
     // and secret number pair.
     if (guess == secretNum) {
         return "You got it!";
     }
 
-    vector <string> clues;
+    vector<string> clues;
     for (size_t i = 0; i < guess.size(); i++) {
         if (guess[i] == secretNum[i]) {
-            // A correct digit is in the correct place.
+            // A correct digit is in the correct place
             clues.push_back("Fermi");
-        } else {
-            // A correct digit is in the incorrect place.
+        }
+        else {
+            // A correct digit is in the incorrect place
             for (char c : secretNum) {
                 if (guess[i] == c) {
                     clues.push_back("Pico");
@@ -63,32 +67,26 @@ string getClues(string guess, string secretNum) {
         }
     }
 
-    if (clues.size() == 0) {
-        return "Bagels"; // There are no correct digits at all.
-    } else {
+    if (clues.empty()) {
+        return "Bagels"; // There are no correct digits at all
+    }
+    else {
         // Sort the clues into alphabetical order so their original order
-        // doesn't give information away.
+        // doesn't give information away
         sort(clues.begin(), clues.end());
-        // Make a single string from the list of string clues.
+        // Make a single string from the list of string clues
         string out = "";
         for (size_t i = 0; i < clues.size(); i++) {
             out += clues[i];
-            out += " ";
+            if (i < clues.size() - 1) {
+                out += " ";
+            }
         }
         return out;
     }
 }
 
-string playAgain() {
-    cout << "Do you want to play again? (yes or no)\n";
-    string response = "YES";
-    cin >> ws;
-    getline(cin, response);
-    return response;
-}
-
-int main() {
-
+void BagelsGame::displayInstructions() const {
     cout << "Bagels, a deductive logic game.\n\n";
     cout << "I am thinking of a " << NUM_DIGITS << "-digit number with no repeated digits.\n";
     cout << "Try to guess what it is. Here are some clues:\n";
@@ -97,44 +95,63 @@ int main() {
     cout << "  Fermi        One digit is correct and in the right position.\n";
     cout << "  Bagels       No digit is correct.\n";
     cout << "For example, if the secret number was 248 and your guess was 843, the\n";
-    cout << "clues would be Fermi Pico.\n";
-    srand(static_cast<unsigned int>(time(0)));
-    while (true) { // Main game loop.
+    cout << "clues would be Fermi Pico.\n\n";
+}
+
+// Main game loop
+void BagelsGame::playGame() {
+    while (true) {
+        srand(static_cast<unsigned int>(time(0)));
         // This stores the secret number the player needs to guess:
-        string secretNum = getSecretNum();
-        
+        secretNum = generateSecretNumber();
+
         int numGuesses = 1;
         while (numGuesses <= MAX_GUESSES) {
             string guess = "";
+
             // Keep looping until they enter a valid guess:
-            while (guess.size() != NUM_DIGITS || !(isdecimal(guess))) {
+            while (!isDecimal(guess)) {
                 cout << "Guess #" << numGuesses;
                 cout << "\n> ";
                 cin >> guess;
+
+                if (!isDecimal(guess)) {
+                    cout << "Please enter a " << NUM_DIGITS << "-digit number with no repeated digits.\n";
+                }
             }
-            string clues = getClues(guess, secretNum);
+
+            string clues = getClues(guess);
             cout << clues << '\n';
-            numGuesses++;
 
             if (guess == secretNum) {
-                break; // They're correct, so break out of this loop.
+                cout << "Congratulations! You guessed the number in " << numGuesses << " tries!\n";
+                // They're correct, so break out of this loop.
+                break;
             }
+
+            numGuesses++;
+
             if (numGuesses > MAX_GUESSES) {
                 cout << "You ran out of guesses.\n";
                 cout << "The answer was " << secretNum << '\n';
             }
         }
-        // Ask player if they want to play again.
-        string askPlayAgain = "YES";
-        askPlayAgain = playAgain();
-        transform(askPlayAgain.begin(), askPlayAgain.end(), askPlayAgain.begin(), ::toupper);
 
-        if (!(askPlayAgain == "YES" || askPlayAgain == "Y")) {
+        // Ask player if they want to play again.
+        if (!playAgain()) {
             break;
         }
-        
     }
-    cout << "Thanks for playing!\n";
 
-    return 0;
+    cout << "Thanks for playing!\n";
+}
+
+bool BagelsGame::playAgain() const {
+    cout << "Do you want to play again? (yes or no)\n";
+    string response = "";
+    cin >> ws;
+    getline(cin, response);
+    transform(response.begin(), response.end(), response.begin(), ::toupper);
+
+    return (response == "YES" || response == "Y");
 }
